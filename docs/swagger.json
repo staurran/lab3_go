@@ -1,0 +1,175 @@
+{
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "My first docs",
+        "title": "DOCS",
+        "contact": {
+            "name": "Dasha"
+        },
+        "license": {
+            "name": "license1"
+        },
+        "version": "1.0"
+    },
+    "host": "127.0.0.1",
+    "basePath": "/",
+    "paths": {
+        "/goods": {
+            "get": {
+                "description": "Return all product and info about rows",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Show all rows in db",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ds.Goods"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "add new row with parameters in json",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Add new row",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ds.Goods"
+                        }
+                    }
+                }
+            }
+        },
+        "/goods/{id}": {
+            "get": {
+                "description": "Return all info of one product by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Show product info by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ds.Goods"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Change price of product by id. Price can't be 0",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Change price of product by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ds.Goods"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete row by id. If there is not this id return error",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Delete row by id",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.AnswerJSON"
+                        }
+                    }
+                }
+            }
+        },
+        "/ping/{name}": {
+            "get": {
+                "description": "very very friendly response",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Show hello text",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "app.AnswerJSON": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "ds.Goods": {
+            "type": "object",
+            "properties": {
+                "UUID": {
+                    "type": "integer"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,115 @@
+basePath: /
+definitions:
+  app.AnswerJSON:
+    properties:
+      description:
+        type: string
+      status:
+        type: string
+    type: object
+  ds.Goods:
+    properties:
+      UUID:
+        type: integer
+      color:
+        type: string
+      company:
+        type: string
+      price:
+        type: integer
+      quantity:
+        type: integer
+      type:
+        type: string
+    type: object
+host: 127.0.0.1
+info:
+  contact:
+    name: Dasha
+  description: My first docs
+  license:
+    name: license1
+  title: DOCS
+  version: "1.0"
+paths:
+  /goods:
+    get:
+      description: Return all product and info about rows
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ds.Goods'
+            type: array
+      summary: Show all rows in db
+      tags:
+      - Tests
+    post:
+      description: add new row with parameters in json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ds.Goods'
+      summary: Add new row
+      tags:
+      - Tests
+  /goods/{id}:
+    delete:
+      description: Delete row by id. If there is not this id return error
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.AnswerJSON'
+      summary: Delete row by id
+      tags:
+      - Tests
+    get:
+      description: Return all info of one product by id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ds.Goods'
+      summary: Show product info by id
+      tags:
+      - Tests
+    put:
+      description: Change price of product by id. Price can't be 0
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ds.Goods'
+      summary: Change price of product by id
+      tags:
+      - Tests
+  /ping/{name}:
+    get:
+      description: very very friendly response
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Show hello text
+      tags:
+      - Tests
+schemes:
+- https
+- http
+swagger: "2.0"
