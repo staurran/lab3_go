@@ -18,6 +18,17 @@ func main() {
 	// Migrate the schema
 	err = db.AutoMigrate(&ds.Goods{})
 	if err != nil {
-		panic("cant migrate db")
+		panic("cant migrate db goods")
 	}
+
+	err = db.AutoMigrate(&ds.Users{})
+	if err != nil {
+		panic("cant migrate db users")
+	}
+
+	err = db.AutoMigrate(&ds.Bucket{})
+	if err != nil {
+		panic("cant migrate db bucket")
+	}
+
 }
