@@ -16,7 +16,7 @@ type Users struct {
 	Password string `json:"password"`
 }
 
-type Bucket struct {
+type Basket struct {
 	Id_row  uint `sql:"type:uuid;primary_key;default:" json:"Id_row" gorm:"primarykey"`
 	Id_user uint `sql:"type:uuid;foreign_key;" json:"id_user" gorm:"foreignkey"`
 	Id_good uint `sql:"type:uuid;foreign_key;" json:"id_good" gorm:"foreignkey"`

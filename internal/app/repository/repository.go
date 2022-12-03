@@ -88,3 +88,34 @@ func (r *Repository) GetUserByID(id uint) (*ds.Users, error) {
 	}
 	return user, nil
 }
+
+func (r *Repository) GetIdByLogin(login string) (uint, error) {
+	user := &ds.Users{}
+	err := r.db.First(user, "login = ?", login).Error
+	if err != nil {
+		return 0, err
+	}
+	return user.Id_user, nil
+}
+
+func (r *Repository) CreateBasketRow(basket_row *ds.Basket) error {
+	err := r.db.Create(basket_row).Error
+	return err
+}
+
+func (r *Repository) GetBasket(id_user uint) ([]ds.Basket, error) {
+	var basket []ds.Basket
+	result := r.db.Find(&basket, "id_user = ?", id_user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return basket, nil
+}
+func (r *Repository) DeleteBasketRow(basket_row *ds.Basket) error {
+	err := r.db.Model(&ds.Users{}).Where("id_good = ?", basket_row.Id_good, "id_user = ?", basket_row.Id_user).Take(&basket_row).Error
+	if err != nil {
+		return err
+	}
+	err = r.db.Delete(&ds.Basket{}, "id_row = ?", basket_row.Id_row).Error
+	return err
+}

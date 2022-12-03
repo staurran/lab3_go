@@ -94,8 +94,6 @@ func CreatePass(password string) (string, error) {
 //возвращает информацию о пользователе. Только для админов
 func (a *Application) CurrentUser(c *gin.Context) {
 	user_id, err := token.ExtractTokenID(c)
-	log.Println(token.ExtractToken(c))
-	log.Println(user_id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -23,8 +23,10 @@ func (a *Application) StartServer() {
 
 	protected := r.Group("api/admin")
 	protected.Use(middlewares.JwtAuthMiddleware())
+	protected.POST("/basket/:id", a.AddBasketRow)
+	protected.DELETE("/basket/:id")
 	protected.GET("/user", a.CurrentUser)
-	protected.GET("/bucket/:id_user")
+	protected.GET("/bucket", a.GetBasket)
 	r.GET("/goods", a.GetAll)
 	r.GET("/goods/:id", a.GetProduct)
 	r.POST("/goods", a.PostProduct)
@@ -41,8 +43,4 @@ func (a *Application) StartServer() {
 type AnswerJSON struct {
 	Status      string `json:"status"`
 	Description string `json:"description"`
-}
-
-type pingResp struct {
-	Status string `json:"status"`
 }

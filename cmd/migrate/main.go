@@ -26,9 +26,9 @@ func main() {
 		panic("cant migrate db users")
 	}
 
-	err = db.AutoMigrate(&ds.Bucket{})
+	err = db.AutoMigrate(&ds.Basket{})
 	if err != nil {
-		panic("cant migrate db bucket")
+		panic("cant migrate db basket")
 	}
 
 }

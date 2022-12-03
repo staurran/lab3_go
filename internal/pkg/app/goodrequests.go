@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/gin-gonic/gin"
 	"lab3/internal/app/ds"
+	"lab3/internal/app/utils/token"
 	"net/http"
 	"strconv"
 )
@@ -169,5 +170,75 @@ func (a *Application) DeleteProduct(gCtx *gin.Context) {
 		return
 	}
 	answer := AnswerJSON{Status: "successful", Description: "row was deleted"}
+	gCtx.IndentedJSON(http.StatusOK, answer)
+}
+
+func (a *Application) AddBasketRow(gCtx *gin.Context) {
+	id_product := gCtx.Param("id")
+	id_product_int, err := strconv.Atoi(id_product)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "id must be integer"}
+		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
+		return
+	}
+	var params ds.Basket
+	id_user, err := token.ExtractTokenID(gCtx)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant extract user_id"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	params.Id_good = uint(id_product_int)
+	params.Id_user = id_user
+	err = a.repo.CreateBasketRow(&params)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "good cant be added to basket"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	answer := AnswerJSON{Status: "successful", Description: "good was added to basket"}
+	gCtx.IndentedJSON(http.StatusOK, answer)
+}
+
+func (a *Application) GetBasket(gCtx *gin.Context) {
+	id_user, err := token.ExtractTokenID(gCtx)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant extract user_id"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	basket, err := a.repo.GetBasket(id_user)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant get rows in basket"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	gCtx.IndentedJSON(http.StatusOK, basket)
+}
+
+func (a *Application) DeleteBasketRow(gCtx *gin.Context) {
+	id_user, err := token.ExtractTokenID(gCtx)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant extract user_id"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	var params ds.Basket
+	id_product := gCtx.Param("id")
+	id_product_int, err := strconv.Atoi(id_product)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "id must be integer"}
+		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
+		return
+	}
+	params.Id_good = uint(id_product_int)
+	params.Id_user = id_user
+	err = a.repo.DeleteBasketRow(&params)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "good cant be added to basket"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	answer := AnswerJSON{Status: "successful", Description: "good was added to basket"}
 	gCtx.IndentedJSON(http.StatusOK, answer)
 }
