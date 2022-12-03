@@ -112,10 +112,19 @@ func (r *Repository) GetBasket(id_user uint) ([]ds.Basket, error) {
 	return basket, nil
 }
 func (r *Repository) DeleteBasketRow(basket_row *ds.Basket) error {
-	err := r.db.Model(&ds.Users{}).Where("id_good = ?", basket_row.Id_good, "id_user = ?", basket_row.Id_user).Take(&basket_row).Error
+	err := r.db.Model(&ds.Basket{}).Where("id_good = ?", basket_row.Id_good, "id_user = ?", basket_row.Id_user).Take(&basket_row).Error
 	if err != nil {
 		return err
 	}
 	err = r.db.Delete(&ds.Basket{}, "id_row = ?", basket_row.Id_row).Error
+	return err
+}
+
+func (r *Repository) ChangeQuantity(basket_row *ds.Basket, quantity int) error {
+	err := r.db.Model(&ds.Basket{}).Where("id_good = ?", basket_row.Id_good, "id_user = ?", basket_row.Id_user).Take(&basket_row).Error
+	if err != nil {
+		return err
+	}
+	err = r.db.Model(&ds.Basket{}).Where("id_good = ?", basket_row.Id_row).Update("quantity", quantity).Error
 	return err
 }

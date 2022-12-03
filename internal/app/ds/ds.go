@@ -1,5 +1,7 @@
 package ds
 
+import "lab3/internal/app/role"
+
 type Goods struct {
 	Id_good  uint   `sql:"type:uuid;primary_key;default:" json:"Id_good" gorm:"primarykey"`
 	Type     string `json:"type"`
@@ -10,14 +12,15 @@ type Goods struct {
 }
 
 type Users struct {
-	Id_user  uint   `sql:"type:uuid;primary_key;default:" json:"Id_user" gorm:"primarykey"`
-	Type     string `json:"type"`
-	Login    string `json:"login"`
-	Password string `json:"password"`
+	Id_user  uint      `sql:"type:uuid;primary_key;default:" json:"Id_user" gorm:"primarykey"`
+	Role     role.Role `json:"type"`
+	Login    string    `json:"login"`
+	Password string    `json:"password"`
 }
 
 type Basket struct {
-	Id_row  uint `sql:"type:uuid;primary_key;default:" json:"Id_row" gorm:"primarykey"`
-	Id_user uint `sql:"type:uuid;foreign_key;" json:"id_user" gorm:"foreignkey"`
-	Id_good uint `sql:"type:uuid;foreign_key;" json:"id_good" gorm:"foreignkey"`
+	Id_row   uint `sql:"type:uuid;primary_key;default:" json:"Id_row" gorm:"primarykey"`
+	Id_user  uint `sql:"type:uuid;foreign_key;" json:"id_user" gorm:"foreignkey"`
+	Id_good  uint `sql:"type:uuid;foreign_key;" json:"id_good" gorm:"foreignkey"`
+	Quantity int  `json:"quantity"`
 }

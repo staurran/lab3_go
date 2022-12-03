@@ -174,21 +174,19 @@ func (a *Application) DeleteProduct(gCtx *gin.Context) {
 }
 
 func (a *Application) AddBasketRow(gCtx *gin.Context) {
-	id_product := gCtx.Param("id")
-	id_product_int, err := strconv.Atoi(id_product)
+	var params ds.Basket
+	err := gCtx.BindJSON(&params)
 	if err != nil {
-		answer := AnswerJSON{Status: "error", Description: "id must be integer"}
+		answer := AnswerJSON{Status: "error", Description: "cant parse json"}
 		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
 		return
 	}
-	var params ds.Basket
 	id_user, err := token.ExtractTokenID(gCtx)
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "cant extract user_id"}
 		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
 		return
 	}
-	params.Id_good = uint(id_product_int)
 	params.Id_user = id_user
 	err = a.repo.CreateBasketRow(&params)
 	if err != nil {
@@ -241,4 +239,32 @@ func (a *Application) DeleteBasketRow(gCtx *gin.Context) {
 	}
 	answer := AnswerJSON{Status: "successful", Description: "good was added to basket"}
 	gCtx.IndentedJSON(http.StatusOK, answer)
+}
+
+func (a *Application) ChangeQuantity(gCtx *gin.Context) {
+	var params ds.Basket
+	err := gCtx.BindJSON(&params)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant parse json"}
+		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
+		return
+	}
+	id_user, err := token.ExtractTokenID(gCtx)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant extract user_id"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	params.Id_user = id_user
+	if params.Quantity >= 0 {
+		err = a.repo.DeleteBasketRow(&params)
+		if err != nil {
+			answer := AnswerJSON{Status: "error", Description: "good cant be added to basket"}
+			gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+			return
+		}
+		answer := AnswerJSON{Status: "successful", Description: "good was added to basket"}
+		gCtx.IndentedJSON(http.StatusOK, answer)
+	}
+	err = a.repo.ChangeQuantity(&params, params.Quantity)
 }

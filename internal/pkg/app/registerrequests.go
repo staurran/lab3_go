@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"lab3/internal/app/ds"
+	"lab3/internal/app/role"
 	"lab3/internal/app/utils/token"
 	"log"
 	"net/http"
@@ -12,7 +13,6 @@ import (
 type RegisterInput struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
-	TypeUser string `json:"type_user"`
 }
 
 //функция регистрации
@@ -31,17 +31,13 @@ func (a *Application) Register(gCtx *gin.Context) {
 		gCtx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	u.Password = hashedPassword
-	if input.TypeUser != "" {
-		u.Type = input.TypeUser
-	} else {
-		u.Type = "user"
-	}
+	u.Role = role.User
 	err = a.repo.CreateUser(&u)
 	if err != nil {
 		gCtx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	token_user, err := token.GenerateToken(u.Id_user)
-	gCtx.JSON(http.StatusOK, gin.H{"token": token_user})
+	gCtx.JSON(http.StatusOK, gin.H{"token": token_user, "role": "user"})
 }
 
 type LoginInput struct {
@@ -80,8 +76,7 @@ func (a *Application) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "problem with token."})
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"token": token_user})
+	c.JSON(http.StatusOK, gin.H{"token": token_user, "role": u.Role})
 
 }
 
@@ -105,6 +100,5 @@ func (a *Application) CurrentUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": u})
 }

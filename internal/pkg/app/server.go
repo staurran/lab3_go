@@ -23,7 +23,8 @@ func (a *Application) StartServer() {
 
 	protected := r.Group("api/admin")
 	protected.Use(middlewares.JwtAuthMiddleware())
-	protected.POST("/basket/:id", a.AddBasketRow)
+	protected.POST("/basket", a.AddBasketRow)
+	protected.POST("/basket/quantity", a.ChangeQuantity)
 	protected.DELETE("/basket/:id")
 	protected.GET("/user", a.CurrentUser)
 	protected.GET("/bucket", a.GetBasket)
