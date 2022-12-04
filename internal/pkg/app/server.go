@@ -24,16 +24,17 @@ func (a *Application) StartServer() {
 
 	public.GET("/goods", a.GetAll)
 	r.GET("/goods/:id", a.GetProduct)
-	r.POST("/goods", a.PostProduct)
-	r.PUT("/goods/:id", a.ChangePrice)
-	r.DELETE("goods/:id", a.DeleteProduct)
+
 	r.GET("/ping/:name", a.Ping)
 
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).POST("/basket", a.AddBasketRow)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).POST("/basket/quantity", a.ChangeQuantity)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).DELETE("/basket/:id", a.DeleteBasketRow)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).POST("/basket", a.AddBasketRow)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).POST("/basket/quantity", a.ChangeQuantity)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).DELETE("/basket/:id", a.DeleteBasketRow)
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).GET("/user", a.CurrentUser)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).GET("/bucket", a.GetBasket)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).GET("/bucket", a.GetBasket)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).POST("/goods", a.PostProduct)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).PUT("/goods/:id", a.ChangePrice)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).DELETE("goods/:id", a.DeleteProduct)
 	err := r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 	if err != nil {
 		log.Println("Run failed")
