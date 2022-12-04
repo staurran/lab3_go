@@ -78,6 +78,7 @@ func (r *Repository) LoginCheck(user *ds.Users) error {
 		return err
 	}
 	user.Id_user = user_db.Id_user
+	user.Role = user_db.Role
 	return nil
 }
 
