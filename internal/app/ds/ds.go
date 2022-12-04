@@ -6,12 +6,14 @@ import (
 )
 
 type Goods struct {
-	Id_good  uint   `sql:"type:uuid;primary_key;default:" json:"Id_good" gorm:"primarykey"`
-	Type     string `json:"type"`
-	Company  string `json:"company"`
-	Color    string `json:"color"`
-	Quantity uint   `json:"quantity"`
-	Price    uint   `json:"price"`
+	Id_good     uint   `sql:"type:uuid;primary_key;default:" json:"Id_good" gorm:"primarykey"`
+	Type        string `json:"type"`
+	Company     string `json:"company"`
+	Color       string `json:"color"`
+	Quantity    uint   `json:"quantity"`
+	Price       uint   `json:"price"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
 }
 
 type Users struct {

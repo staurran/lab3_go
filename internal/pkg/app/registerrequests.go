@@ -29,15 +29,22 @@ func (a *Application) Register(gCtx *gin.Context) {
 	log.Println(hashedPassword)
 	if err != nil {
 		gCtx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	u.Password = hashedPassword
 	u.Role = role.User
+	err = a.repo.LoginCheck(&u)
+	if err != nil {
+		gCtx.JSON(http.StatusBadRequest, gin.H{"error": "login was used before"})
+		return
+	}
 	err = a.repo.CreateUser(&u)
 	if err != nil {
 		gCtx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	token_user, err := token.GenerateToken(u.Id_user, u.Role)
-	gCtx.JSON(http.StatusOK, gin.H{"token": token_user, "role": "user"})
+	gCtx.JSON(http.StatusOK, gin.H{"token": token_user, "role": u.Role})
 }
 
 type LoginInput struct {
