@@ -83,7 +83,7 @@ func (r *Repository) LoginCheck(user *ds.Users) error {
 }
 
 func (r *Repository) CheckLogin(login string) error {
-	err := r.db.First(&ds.Users{}).Where("login = ?", login).Error
+	err := r.db.Model(&ds.Users{}).Where("login = ?", login).Error
 	if err != nil {
 		return nil
 	}
