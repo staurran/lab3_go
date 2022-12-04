@@ -82,7 +82,7 @@ func (a *Application) ChangePrice(gCtx *gin.Context) {
 		return
 	}
 
-	id_product := gCtx.Param("id_good")
+	id_product := gCtx.Param("id")
 	id_product_int, err := strconv.Atoi(id_product)
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "id must be integer"}

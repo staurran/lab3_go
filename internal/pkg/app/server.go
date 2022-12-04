@@ -15,6 +15,7 @@ func (a *Application) StartServer() {
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000", "http://localhost:3000"}
+	config.AllowHeaders = []string{"content-type", "Authorization"}
 	config.AllowMethods = []string{"PUT", "PATCH", "GET", "POST", "DELETE"}
 	r.Use(cors.New(config))
 
