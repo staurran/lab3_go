@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"lab3/internal/app/middlewares"
+	"lab3/internal/app/role"
 	"log"
 )
 
@@ -21,13 +22,12 @@ func (a *Application) StartServer() {
 	public.POST("/register", a.Register)
 	public.POST("/login", a.Login)
 
-	protected := r.Group("api/admin")
-	protected.Use(middlewares.JwtAuthMiddleware())
-	protected.POST("/basket", a.AddBasketRow)
-	protected.POST("/basket/quantity", a.ChangeQuantity)
-	protected.DELETE("/basket/:id")
-	protected.GET("/user", a.CurrentUser)
-	protected.GET("/bucket", a.GetBasket)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).POST("/basket", a.AddBasketRow)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).POST("/basket/quantity", a.ChangeQuantity)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).DELETE("/basket/:id", a.DeleteBasketRow)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).GET("/user", a.CurrentUser)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).GET("/bucket", a.GetBasket)
+
 	r.GET("/goods", a.GetAll)
 	r.GET("/goods/:id", a.GetProduct)
 	r.POST("/goods", a.PostProduct)

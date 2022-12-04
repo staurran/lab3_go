@@ -1,6 +1,9 @@
 package ds
 
-import "lab3/internal/app/role"
+import (
+	"github.com/dgrijalva/jwt-go"
+	"lab3/internal/app/role"
+)
 
 type Goods struct {
 	Id_good  uint   `sql:"type:uuid;primary_key;default:" json:"Id_good" gorm:"primarykey"`
@@ -23,4 +26,10 @@ type Basket struct {
 	Id_user  uint `sql:"type:uuid;foreign_key;" json:"id_user" gorm:"foreignkey"`
 	Id_good  uint `sql:"type:uuid;foreign_key;" json:"id_good" gorm:"foreignkey"`
 	Quantity int  `json:"quantity"`
+}
+
+type JWTClaims struct {
+	jwt.StandardClaims
+	UserUUID uint `json:"user_id"`
+	Role     role.Role
 }

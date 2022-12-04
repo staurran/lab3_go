@@ -36,7 +36,7 @@ func (a *Application) Register(gCtx *gin.Context) {
 	if err != nil {
 		gCtx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	token_user, err := token.GenerateToken(u.Id_user)
+	token_user, err := token.GenerateToken(u.Id_user, u.Role)
 	gCtx.JSON(http.StatusOK, gin.H{"token": token_user, "role": "user"})
 }
 
@@ -71,7 +71,7 @@ func (a *Application) Login(c *gin.Context) {
 		return
 	}
 	log.Println(u.Id_user)
-	token_user, err := token.GenerateToken(u.Id_user)
+	token_user, err := token.GenerateToken(u.Id_user, u.Role)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "problem with token."})
 		return
