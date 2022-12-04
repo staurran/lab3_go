@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -80,12 +81,22 @@ func (r *Repository) LoginCheck(user *ds.Users) error {
 	return nil
 }
 
+func (r *Repository) CheckLogin(login string) error {
+	err := r.db.First(&ds.Users{}).Where("login = ?", login).Error
+	if err != nil {
+		return nil
+	}
+	err1 := errors.New("math: square root of negative number")
+	return err1
+}
+
 func (r *Repository) GetUserByID(id uint) (*ds.Users, error) {
 	user := &ds.Users{}
 	err := r.db.First(user, "id_user = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
 

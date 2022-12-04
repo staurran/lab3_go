@@ -33,7 +33,7 @@ func (a *Application) Register(gCtx *gin.Context) {
 	}
 	u.Password = hashedPassword
 	u.Role = role.User
-	err = a.repo.LoginCheck(&u)
+	err = a.repo.CheckLogin(u.Login)
 	if err != nil {
 		gCtx.JSON(http.StatusBadRequest, gin.H{"error": "login was used before"})
 		return
