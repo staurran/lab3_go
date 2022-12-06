@@ -3,8 +3,10 @@ package app
 import (
 	"github.com/gin-gonic/gin"
 	"lab3/internal/app/ds"
+	"lab3/internal/app/repository"
 	"lab3/internal/app/utils/token"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -57,17 +59,13 @@ func (a *Application) AddOrder(gCtx *gin.Context) {
 	gCtx.IndentedJSON(http.StatusOK, answer)
 }
 
-type GoodsOrder struct {
-	good     ds.Goods
-	quantity int
-}
-
 type OrderRes struct {
-	Id_order    uint
-	Date        string
-	Status      string
-	Description string
-	goods       []GoodsOrder
+	Id_order    uint                      `json:"id_order"`
+	Date        string                    `json:"date"`
+	Status      string                    `json:"status"`
+	Description string                    `json:"description"`
+	Total       int                       `json:"total"`
+	Goods       []repository.GoodQuantity `json:"goods"`
 }
 
 func (a *Application) GetAllOrders(gCtx *gin.Context) {
@@ -84,12 +82,68 @@ func (a *Application) GetAllOrders(gCtx *gin.Context) {
 		return
 	}
 	var results []OrderRes
-	for ind, ord := range order {
-		results[ind].Date = ord.Date
-		results[ind].Id_order = ord.Id_order
-		results[ind].Status = ord.Status
-		results[ind].Description = ord.Description
-		results[ind].goods, err = a.repo.GetGoodOrder(id_order)
+	for _, ord := range order {
+		var row OrderRes
+		row.Date = ord.Date
+		row.Id_order = ord.Id_order
+		row.Status = ord.Name
+		row.Description = ord.Description
+		row.Total = ord.Total
+		row.Goods, err = a.repo.GetGoodOrder(ord.Id_order)
+		results = append(results, row)
 	}
-	gCtx.IndentedJSON(http.StatusOK, order)
+	gCtx.IndentedJSON(http.StatusOK, results)
+}
+
+func (a *Application) DeleteOrder(gCtx *gin.Context) {
+	id_order := gCtx.Param("id")
+	id_order_int, err := strconv.Atoi(id_order)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "id must be integer"}
+		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
+		return
+	}
+	err = a.repo.ChangeStatus(uint(id_order_int), 4)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant change status"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	answer := AnswerJSON{Status: "success", Description: "changed"}
+	gCtx.IndentedJSON(http.StatusOK, answer)
+}
+
+func (a *Application) GetStatus(gCtx *gin.Context) {
+	all_rows, err := a.repo.GetAllStatuses()
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant get all rows"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	gCtx.IndentedJSON(http.StatusOK, all_rows)
+}
+
+func (a *Application) ChangeStatus(gCtx *gin.Context) {
+	id_status := gCtx.Param("id_status")
+	id_status_int, err := strconv.Atoi(id_status)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "id must be integer"}
+		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
+		return
+	}
+	id_order := gCtx.Param("id_order")
+	id_order_int, err := strconv.Atoi(id_order)
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "id must be integer"}
+		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
+		return
+	}
+	err = a.repo.ChangeStatus(uint(id_order_int), uint(id_status_int))
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant change status"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	answer := AnswerJSON{Status: "success", Description: "changed"}
+	gCtx.IndentedJSON(http.StatusOK, answer)
 }

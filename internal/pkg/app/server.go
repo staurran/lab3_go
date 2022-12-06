@@ -38,10 +38,12 @@ func (a *Application) StartServer() {
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).DELETE("goods/:id", a.DeleteProduct)
 
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).POST("/order", a.AddOrder)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).GET("/order/id_user", a.GetAllOrders)
-	/*r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).DELETE("/order/number", a.DeleteOrder)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).GET("/order", a.GetAllOrders)
 
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).PUT("/order/number", a.ChangeStatus)*/
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).DELETE("/order/:id", a.DeleteOrder)
+
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).GET("/order-status", a.GetStatus)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).PUT("/order/:id_order/:id_status", a.ChangeStatus)
 
 	err := r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 	if err != nil {

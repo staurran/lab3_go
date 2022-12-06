@@ -130,10 +130,7 @@ func (a *Application) PostProduct(gCtx *gin.Context) {
 		answer := AnswerJSON{Status: "error", Description: "price cant be <= 0"}
 		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
 	}
-	if params.Quantity <= 0 {
-		answer := AnswerJSON{Status: "error", Description: "quantity cant be <= 0"}
-		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
-	}
+
 	err = a.repo.CreateProduct(&params)
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "cant create product row"}

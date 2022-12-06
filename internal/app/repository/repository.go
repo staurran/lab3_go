@@ -163,15 +163,16 @@ func (r *Repository) CreateGoodOrder(orderGood *ds.GoodOrder) error {
 }
 
 type ordersStatus struct {
-	Id_order uint
-	Date string
-	Status string
+	Id_order    uint
+	Date        string
+	Name        string
+	Total       int
 	Description string
 }
 
 func (r *Repository) GetOrder(id_user uint) ([]ordersStatus, error) {
 	var order []ordersStatus
-	err := r.db.Table("orders").Select("*").Joins("JOIN statuses on statuses.id_status = orders.id_status").Find(&order, "id_user = ?", id_user).Error
+	err := r.db.Table("orders").Select("*").Joins("JOIN statuses on statuses.id_status = orders.status").Find(&order, "id_user = ?", id_user).Error
 
 	if err != nil {
 		return nil, err
@@ -179,4 +180,37 @@ func (r *Repository) GetOrder(id_user uint) ([]ordersStatus, error) {
 	return order, nil
 }
 
-func (r *Repository) GetGoodOrder(id_order uint) ([]ds.)
+type GoodQuantity struct {
+	Id_good     uint   `json:"Id_good"`
+	Type        string `json:"type"`
+	Company     string `json:"company"`
+	Color       string `json:"color"`
+	Price       uint   `json:"price"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
+	Quantity    uint   `json:"quantity"`
+}
+
+func (r *Repository) GetGoodOrder(id_order uint) ([]GoodQuantity, error) {
+	var goods []GoodQuantity
+	err := r.db.Table("good_orders").Select("*").Joins("JOIN goods on goods.id_good = good_orders.id_good").Find(&goods, "id_order = ?", id_order).Error
+
+	if err != nil {
+		return goods, err
+	}
+	return goods, nil
+}
+
+func (r *Repository) GetAllStatuses() ([]ds.Statuses, error) {
+	var products []ds.Statuses
+	result := r.db.Find(&products)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return products, nil
+}
+
+func (r *Repository) ChangeStatus(id_order uint, id_status uint) error {
+	err := r.db.Model(&ds.Orders{}).Where("id_order = ?", id_order).Update("status", id_status).Error
+	return err
+}

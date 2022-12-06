@@ -10,7 +10,6 @@ type Goods struct {
 	Type        string `json:"type"`
 	Company     string `json:"company"`
 	Color       string `json:"color"`
-	Quantity    uint   `json:"quantity"`
 	Price       uint   `json:"price"`
 	Description string `json:"description"`
 	Image       string `json:"image"`
@@ -41,6 +40,7 @@ type Orders struct {
 	Date     string `json:"date"`
 	Status   uint   `json:"status"`
 	Id_user  uint   `json:"id_User"`
+	Total    int    `json:"total"`
 }
 
 type GoodOrder struct {
@@ -51,7 +51,7 @@ type GoodOrder struct {
 }
 
 type Statuses struct {
-	Id_status   uint   `sql:"type:uuid;primary_key;default:" json:"Id_row" gorm:"primarykey"`
+	Id_status   uint   `sql:"type:uuid;primary_key;default:" json:"Id_status" gorm:"primarykey"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
