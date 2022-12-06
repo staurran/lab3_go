@@ -28,6 +28,7 @@ func WithAuthCheck(assignedRoles ...role.Role) func(ctx *gin.Context) {
 			return
 		}
 		role_user, err := token.ExtractTokenRole(gCtx)
+
 		if err != nil {
 			gCtx.AbortWithStatus(http.StatusForbidden)
 		}

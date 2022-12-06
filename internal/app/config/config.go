@@ -42,7 +42,6 @@ func NewConfig(ctx context.Context) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	log.Info("config parsed")
 
 	return cfg, nil

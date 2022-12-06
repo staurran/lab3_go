@@ -21,7 +21,7 @@ func main() {
 		panic("cant migrate db goods")
 	}
 
-	err = db.AutoMigrate(&ds.Users{})
+	//err = db.AutoMigrate(&ds.Users{})
 	if err != nil {
 		panic("cant migrate db users")
 	}
@@ -31,4 +31,18 @@ func main() {
 		panic("cant migrate db basket")
 	}
 
+	err = db.AutoMigrate(&ds.Orders{})
+	if err != nil {
+		panic("cant migrate db orders")
+	}
+
+	err = db.AutoMigrate(&ds.Statuses{})
+	if err != nil {
+		panic("cant migrate db status")
+	}
+
+	err = db.AutoMigrate(&ds.GoodOrder{})
+	if err != nil {
+		panic("cant migrate db goodOrder")
+	}
 }

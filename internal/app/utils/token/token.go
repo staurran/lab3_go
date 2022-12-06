@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"lab3/internal/app/ds"
 	"lab3/internal/app/role"
+	"log"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -13,20 +15,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GenerateToken(user_id uint, role role.Role) (string, error) {
+func GenerateToken(user_id uint, role_user role.Role) (string, error) {
 
+	/*StandardClaims: jwt.StandardClaims{
+	ExpiresAt: time.Now().Add(cfg.JWT.ExpiresIn).Unix(),
+	IssuedAt:  time.Now().Unix(),*/
 	token_lifespan, err := strconv.Atoi(os.Getenv("TOKEN_HOUR_LIFESPAN"))
 
 	if err != nil {
 		return "", err
 	}
-
-	claims := jwt.MapClaims{}
-	claims["authorized"] = true
-	claims["user_id"] = user_id
-	claims["role"] = role
-	claims["exp"] = time.Now().Add(time.Hour * time.Duration(token_lifespan)).Unix()
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &ds.JWTClaims{
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * time.Duration(token_lifespan)).Unix(),
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    "bitop-admin",
+		},
+		UserID: user_id,   // test uuid
+		Role:   role_user, // test data
+	})
 
 	return token.SignedString([]byte(os.Getenv("API_SECRET")))
 
@@ -83,17 +90,18 @@ func ExtractTokenID(c *gin.Context) (uint, error) {
 
 func ExtractTokenRole(c *gin.Context) (role.Role, error) {
 
-	tokenString := ExtractToken(c)
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
+	jwtStr := ExtractToken(c)
+	token, err := jwt.ParseWithClaims(jwtStr, &ds.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+
 		return []byte(os.Getenv("API_SECRET")), nil
 	})
 	if err != nil {
+		c.AbortWithStatus(http.StatusForbidden)
+		log.Println(err)
 		return 0, err
 	}
-	token_ds := token.Claims.(ds.JWTClaims)
 
-	return token_ds.Role, nil
+	claims := token.Claims.(*ds.JWTClaims)
+
+	return claims.Role, nil
 }

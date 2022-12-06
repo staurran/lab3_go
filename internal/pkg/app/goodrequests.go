@@ -96,7 +96,7 @@ func (a *Application) ChangePrice(gCtx *gin.Context) {
 		return
 	}
 
-	err = a.repo.ChangeProduct(uint(id_product_int), params.Price)
+	err = a.repo.ChangeProduct(uint(id_product_int), int(params.Price))
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "cant change price"}
 		gCtx.IndentedJSON(http.StatusInternalServerError, answer)

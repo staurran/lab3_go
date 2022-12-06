@@ -46,7 +46,7 @@ func (r *Repository) CreateProduct(product *ds.Goods) error {
 	return err
 }
 
-func (r *Repository) ChangeProduct(id uint, new_price uint) error {
+func (r *Repository) ChangeProduct(id uint, new_price int) error {
 	err := r.db.Model(&ds.Goods{}).Where("id_good = ?", id).Update("price", new_price).Error
 	return err
 }
@@ -123,6 +123,16 @@ func (r *Repository) GetBasket(id_user uint) ([]ds.Basket, error) {
 	}
 	return basket, nil
 }
+
+func (r *Repository) GetBasketById(id uint) (ds.Basket, error) {
+	var basket ds.Basket
+	result := r.db.Find(&basket, "id_row = ?", id)
+	if result.Error != nil {
+		return basket, result.Error
+	}
+	return basket, nil
+}
+
 func (r *Repository) DeleteBasketRow(basket_row *ds.Basket) error {
 	err := r.db.Model(&ds.Basket{}).Where("id_good = ?", basket_row.Id_good, "id_user = ?", basket_row.Id_user).Take(&basket_row).Error
 	if err != nil {
@@ -140,3 +150,33 @@ func (r *Repository) ChangeQuantity(basket_row *ds.Basket, quantity int) error {
 	err = r.db.Model(&ds.Basket{}).Where("id_good = ?", basket_row.Id_row).Update("quantity", quantity).Error
 	return err
 }
+
+func (r *Repository) CreateOrder(params *ds.Orders) error {
+	err := r.db.Create(params).Error
+
+	return err
+}
+
+func (r *Repository) CreateGoodOrder(orderGood *ds.GoodOrder) error {
+	err := r.db.Create(orderGood).Error
+	return err
+}
+
+type ordersStatus struct {
+	Id_order uint
+	Date string
+	Status string
+	Description string
+}
+
+func (r *Repository) GetOrder(id_user uint) ([]ordersStatus, error) {
+	var order []ordersStatus
+	err := r.db.Table("orders").Select("*").Joins("JOIN statuses on statuses.id_status = orders.id_status").Find(&order, "id_user = ?", id_user).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return order, nil
+}
+
+func (r *Repository) GetGoodOrder(id_order uint) ([]ds.)
