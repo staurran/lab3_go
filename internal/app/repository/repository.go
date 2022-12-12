@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -46,8 +45,31 @@ func (r *Repository) CreateProduct(product *ds.Goods) error {
 	return err
 }
 
-func (r *Repository) ChangeProduct(id uint, new_price int) error {
-	err := r.db.Model(&ds.Goods{}).Where("id_good = ?", id).Update("price", new_price).Error
+func (r *Repository) ChangeProduct(product ds.Goods) error {
+	db_product := &ds.Goods{}
+	err := r.db.First(db_product, "id_good = ?", product.Id_good).Error // find product with code D42
+	if err != nil {
+		return err
+	}
+	if product.Price != 0 {
+		db_product.Price = product.Price
+	}
+	if product.Description != "" {
+		db_product.Description = product.Description
+	}
+	if product.Type != "" {
+		db_product.Type = product.Type
+	}
+	if product.Color != "" {
+		db_product.Color = product.Color
+	}
+	if product.Image != "" {
+		db_product.Image = product.Image
+	}
+	if product.Company != "" {
+		db_product.Company = product.Company
+	}
+	err = r.db.Model(&ds.Goods{}).Where("id_good = ?", product.Id_good).Update("price", product.Price).Error
 	return err
 }
 
@@ -87,8 +109,7 @@ func (r *Repository) CheckLogin(login string) error {
 	if err != nil {
 		return nil
 	}
-	err1 := errors.New("math: square root of negative number")
-	return err1
+	return err
 }
 
 func (r *Repository) GetUserByID(id uint) (*ds.Users, error) {
@@ -168,11 +189,22 @@ type ordersStatus struct {
 	Name        string
 	Total       int
 	Description string
+	Login       string
 }
 
 func (r *Repository) GetOrder(id_user uint) ([]ordersStatus, error) {
 	var order []ordersStatus
 	err := r.db.Table("orders").Select("*").Joins("JOIN statuses on statuses.id_status = orders.status").Find(&order, "id_user = ?", id_user).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return order, nil
+}
+
+func (r *Repository) GetAllOrders() ([]ordersStatus, error) {
+	var order []ordersStatus
+	err := r.db.Table("orders").Select("*").Joins("JOIN statuses on statuses.id_status = orders.status").Joins("JOIN users on users.id_user = orders.id_user").Find(&order).Error
 
 	if err != nil {
 		return nil, err

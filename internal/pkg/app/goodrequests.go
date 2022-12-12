@@ -73,7 +73,7 @@ func (a *Application) GetProduct(gCtx *gin.Context) {
 // @Produce      json
 // @Success      200  {object}  ds.Goods
 // @Router       /goods/{id} [put]
-func (a *Application) ChangePrice(gCtx *gin.Context) {
+func (a *Application) ChangeProduct(gCtx *gin.Context) {
 	var params ds.Goods
 	err := gCtx.BindJSON(&params)
 	if err != nil {
@@ -82,27 +82,13 @@ func (a *Application) ChangePrice(gCtx *gin.Context) {
 		return
 	}
 
-	id_product := gCtx.Param("id")
-	id_product_int, err := strconv.Atoi(id_product)
-	if err != nil {
-		answer := AnswerJSON{Status: "error", Description: "id must be integer"}
-		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
-		return
-	}
-
-	if params.Price == 0 {
-		answer := AnswerJSON{Status: "error", Description: "product cant cost 0"}
-		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
-		return
-	}
-
-	err = a.repo.ChangeProduct(uint(id_product_int), int(params.Price))
+	err = a.repo.ChangeProduct(params)
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "cant change price"}
 		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
 		return
 	}
-	product, err := a.repo.GetProductByID(uint(id_product_int))
+	product, err := a.repo.GetProductByID(params.Id_good)
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "cant get product by id"}
 		gCtx.IndentedJSON(http.StatusInternalServerError, answer)

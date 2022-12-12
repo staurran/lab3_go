@@ -28,21 +28,20 @@ func (a *Application) StartServer() {
 
 	r.GET("/ping/:name", a.Ping)
 
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).POST("/basket", a.AddBasketRow)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).POST("/basket/:quantity", a.ChangeQuantity)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).DELETE("/basket/:id", a.DeleteBasketRow)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).GET("/user", a.CurrentUser)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).GET("/basket", a.GetBasket)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).POST("/goods", a.PostProduct)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).PUT("/goods/:id", a.ChangePrice)
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).DELETE("goods/:id", a.DeleteProduct)
-
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).POST("/order", a.AddOrder)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).POST("/basket", a.AddOrder)
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).GET("/order", a.GetAllOrders)
 
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).DELETE("/order/:id", a.DeleteOrder)
 
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).GET("/order-status", a.GetStatus)
+
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).GET("/user", a.CurrentUser)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).POST("/goods", a.PostProduct)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).PUT("/goods", a.ChangeProduct)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).DELETE("goods/:id", a.DeleteProduct)
+
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).GET("goods/all-orders", a.GetOrders)
+
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin)).PUT("/order/:id_order/:id_status", a.ChangeStatus)
 
 	err := r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

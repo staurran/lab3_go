@@ -10,20 +10,26 @@ import (
 	"time"
 )
 
+type GoodQuantity struct {
+	Id_good  uint `json:"id_good"`
+	Quantity int  `json:"quantity"`
+}
+
 type ReqStruct struct {
-	Baskets []uint `json:"baskets"`
+	Baskets []GoodQuantity `json:"baskets"`
 }
 
 func (a *Application) AddOrder(gCtx *gin.Context) {
 	var params ReqStruct
 
 	err := gCtx.BindJSON(&params)
+
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "cant parse json"}
 		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
 		return
 	}
-	date := time.Now().Format("31-02-2006")
+	date := time.Now().Format("01-02-2006")
 	user_id, err := token.ExtractTokenID(gCtx)
 
 	order := ds.Orders{Status: 1, Date: date, Id_user: user_id}
@@ -35,17 +41,12 @@ func (a *Application) AddOrder(gCtx *gin.Context) {
 		return
 	}
 
-	for _, id_basket := range params.Baskets {
+	for _, good := range params.Baskets {
 		var orderGood ds.GoodOrder
-		basket, err := a.repo.GetBasketById(id_basket)
-		if err != nil {
-			answer := AnswerJSON{Status: "error", Description: "cant add good in order"}
-			gCtx.IndentedJSON(http.StatusInternalServerError, answer)
-			return
-		}
-		orderGood.Id_good = basket.Id_good
+
+		orderGood.Id_good = good.Id_good
 		orderGood.Id_order = order.Id_order
-		orderGood.Quantity = basket.Quantity
+		orderGood.Quantity = good.Quantity
 		err = a.repo.CreateGoodOrder(&orderGood)
 		if err != nil {
 
@@ -66,6 +67,7 @@ type OrderRes struct {
 	Description string                    `json:"description"`
 	Total       int                       `json:"total"`
 	Goods       []repository.GoodQuantity `json:"goods"`
+	Login       string                    `json:"login"`
 }
 
 func (a *Application) GetAllOrders(gCtx *gin.Context) {
@@ -93,6 +95,17 @@ func (a *Application) GetAllOrders(gCtx *gin.Context) {
 		results = append(results, row)
 	}
 	gCtx.IndentedJSON(http.StatusOK, results)
+}
+
+func (a *Application) GetOrders(gCtx *gin.Context) {
+	all_rows, err := a.repo.GetAllOrders()
+	if err != nil {
+		answer := AnswerJSON{Status: "error", Description: "cant get all rows"}
+		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
+		return
+	}
+	gCtx.IndentedJSON(http.StatusOK, all_rows)
+
 }
 
 func (a *Application) DeleteOrder(gCtx *gin.Context) {
