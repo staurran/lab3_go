@@ -17,6 +17,7 @@ type GoodQuantity struct {
 
 type ReqStruct struct {
 	Baskets []GoodQuantity `json:"baskets"`
+	Total   int            `json:"total"`
 }
 
 func (a *Application) AddOrder(gCtx *gin.Context) {
@@ -32,7 +33,7 @@ func (a *Application) AddOrder(gCtx *gin.Context) {
 	date := time.Now().Format("01-02-2006")
 	user_id, err := token.ExtractTokenID(gCtx)
 
-	order := ds.Orders{Status: 1, Date: date, Id_user: user_id}
+	order := ds.Orders{Status: 1, Date: date, Id_user: user_id, Total: params.Total}
 	err = a.repo.CreateOrder(&order)
 
 	if err != nil {
