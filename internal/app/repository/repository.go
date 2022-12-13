@@ -69,7 +69,7 @@ func (r *Repository) ChangeProduct(product ds.Goods) error {
 	if product.Company != "" {
 		db_product.Company = product.Company
 	}
-	err = r.db.Model(&ds.Goods{}).Where("id_good = ?", product.Id_good).Update("price", product.Price).Error
+	err = r.db.Save(&db_product).Error
 	return err
 }
 
