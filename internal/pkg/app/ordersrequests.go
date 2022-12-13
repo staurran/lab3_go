@@ -99,13 +99,24 @@ func (a *Application) GetAllOrders(gCtx *gin.Context) {
 }
 
 func (a *Application) GetOrders(gCtx *gin.Context) {
-	all_rows, err := a.repo.GetAllOrders()
+	order, err := a.repo.GetAllOrders()
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "cant get all rows"}
 		gCtx.IndentedJSON(http.StatusInternalServerError, answer)
 		return
 	}
-	gCtx.IndentedJSON(http.StatusOK, all_rows)
+	var results []OrderRes
+	for _, ord := range order {
+		var row OrderRes
+		row.Date = ord.Date
+		row.Id_order = ord.Id_order
+		row.Status = ord.Name
+		row.Description = ord.Description
+		row.Total = ord.Total
+		row.Goods, err = a.repo.GetGoodOrder(ord.Id_order)
+		results = append(results, row)
+	}
+	gCtx.IndentedJSON(http.StatusOK, results)
 
 }
 
