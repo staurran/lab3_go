@@ -142,11 +142,7 @@ func (a *Application) DeleteProduct(gCtx *gin.Context) {
 		return
 	}
 	err = a.repo.DeleteProduct(uint(id_product_int))
-	if err.Error() == "record not found" {
-		answer := AnswerJSON{Status: "error", Description: "id not found"}
-		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
-		return
-	}
+
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "cant delete row"}
 		gCtx.IndentedJSON(http.StatusInternalServerError, answer)

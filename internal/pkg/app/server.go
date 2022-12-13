@@ -28,9 +28,8 @@ func (a *Application) StartServer() {
 
 	r.GET("/ping/:name", a.Ping)
 
-	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).POST("/basket", a.AddOrder)
+	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).POST("/order", a.AddOrder)
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).GET("/order", a.GetAllOrders)
-
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).DELETE("/order/:id", a.DeleteOrder)
 
 	r.Use(middlewares.WithAuthCheck(role.Manager, role.Admin, role.User)).GET("/order-status", a.GetStatus)

@@ -189,7 +189,6 @@ type ordersStatus struct {
 	Name        string
 	Total       int
 	Description string
-	Login       string
 }
 
 func (r *Repository) GetOrder(id_user uint) ([]ordersStatus, error) {
