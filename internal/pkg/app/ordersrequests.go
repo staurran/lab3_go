@@ -5,6 +5,7 @@ import (
 	"lab3/internal/app/ds"
 	"lab3/internal/app/repository"
 	"lab3/internal/app/utils/token"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -24,7 +25,7 @@ func (a *Application) AddOrder(gCtx *gin.Context) {
 	var params ReqStruct
 
 	err := gCtx.BindJSON(&params)
-
+	log.Println(params)
 	if err != nil {
 		answer := AnswerJSON{Status: "error", Description: "cant parse json"}
 		gCtx.IndentedJSON(http.StatusRequestedRangeNotSatisfiable, answer)
@@ -113,6 +114,7 @@ func (a *Application) GetOrders(gCtx *gin.Context) {
 		row.Status = ord.Name
 		row.Description = ord.Description
 		row.Total = ord.Total
+		row.Login = ord.Login
 		row.Goods, err = a.repo.GetGoodOrder(ord.Id_order)
 		results = append(results, row)
 	}
